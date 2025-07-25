@@ -1,0 +1,12 @@
+pandas
+SQLAlchemy
+psycopg2-binary
+scikit-learn
+xgboost
+fastapi
+uvicorn
+pytest
+coverage
+pytest
+coverage
+httpx
