@@ -10,3 +10,6 @@ coverage
 pytest
 coverage
 httpx
+flake8
+black
+isort
