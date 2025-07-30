@@ -1,42 +1,46 @@
 import os
 import sys
-import pandas as pd
-from src.db import write_to_db
-
+import logging
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import pandas as pd
+from src.db import write_to_db
 
-def load_data(input_path: str):
-    """Загружает данные из csv или xlsx"""
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
+
+def load_data(input_path: str) -> pd.DataFrame:
+    """Загружает данные из CSV или XLSX файла"""
+    if not os.path.exists(input_path):
+        logger.error(f"Файл не найден: {input_path}")
+        raise FileNotFoundError(f"Файл не найден: {input_path}")
     if input_path.endswith(".xlsx"):
         df = pd.read_excel(input_path)
     else:
         df = pd.read_csv(input_path)
-    print("First 5 rows:")
-    print(df.head())
-    print("\nMissing values per column:")
-    print(df.isnull().sum())
+    logger.info("First 5 rows:\n%s", df.head())
+    logger.info("Missing values per column:\n%s", df.isnull().sum())
     return df
 
-
-def main(input_path: str):
+def main(input_path: str, cleaned_path="data/cleaned.csv"):
     df = load_data(input_path)
-
-    print("\nNumeric columns stats:")
-    print(df.describe())
+    logger.info("Numeric columns stats:\n%s", df.describe())
 
     # Преобразуем price, count, add_cost в числа (если вдруг строка)
     for col in ["price", "count", "add_cost"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    df.to_csv("data/cleaned.csv", index=False)
-    print("\nДанные сохранены в data/cleaned.csv")
+    df.to_csv(cleaned_path, index=False)
+    logger.info(f"Данные сохранены в {cleaned_path}")
 
     # Записываем данные в БД
     write_to_db(df, table_name="sales")
-    print("Данные записаны в БД")
-
+    logger.info("Данные записаны в таблицу sales в БД")
 
 if __name__ == "__main__":
     import argparse

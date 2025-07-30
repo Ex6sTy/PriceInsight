@@ -1,0 +1,2 @@
+Test RMSE: 26011.94
+Train size: 800000, Test size: 200000
