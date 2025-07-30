@@ -8,3 +8,10 @@ __pycache__/
 *.py[cod]
 *.sqlite3
 staticfiles/
+data/*.csv
+data/*.xlsx
+data/cleaned.csv
+data/features.csv
+model.joblib
+metrics.txt
+.coverage
